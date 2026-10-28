@@ -1,11 +1,11 @@
 {
   "name": "@convex-dev/presence",
   "description": "Convex component for presence functionality.",
-  "repository": "github:get-convex/presence",
-  "homepage": "https://github.com/get-convex/presence#readme",
+  "repository": "github:convex/presence",
+  "homepage": "https://github.com/convex/presence#readme",
   "bugs": {
     "email": "support@convex.dev",
-    "url": "https://github.com/get-convex/presence/issues"
+    "url": "https://github.com/convex/presence/issues"
   },
   "version": "0.4.0",
   "license": "Apache-2.0",
