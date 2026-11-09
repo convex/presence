@@ -112,7 +112,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^17.0.0",
-    "happy-dom": "^20.10.6",
+    "happy-dom": "^21.0.0",
     "prettier": "^3.6.2",
     "react": "19.2.7",
     "react-dom": "19.2.7",
