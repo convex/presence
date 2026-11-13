@@ -2,6 +2,7 @@
 import { beforeEach, expect, test, vi } from "vitest";
 import { StrictMode, act } from "react";
 import { createRoot } from "react-dom/client";
+import { makeFunctionReference } from "convex/server";
 import usePresence, { type PresenceAPI } from "./index.js";
 
 // Response latency of the fake backend, long enough that effect cleanups
@@ -195,4 +196,36 @@ test("a session taken over by a re-run effect is not disconnected", async () => 
   expect([...backend.disconnectedTokens].sort()).toEqual(
     [...backend.issuedTokens].sort(),
   );
+});
+
+test("the unload beacon calls the disconnect function it was given", async () => {
+  const sendBeacon = vi.fn((_url: string, _data: Blob) => true);
+  Object.defineProperty(navigator, "sendBeacon", {
+    value: sendBeacon,
+    configurable: true,
+  });
+  // The app's functions live in convex/rooms/presence.ts, not convex/presence.ts.
+  const presence = {
+    ...presenceApi,
+    disconnect: makeFunctionReference<"mutation">("rooms/presence:disconnect"),
+  } as unknown as PresenceAPI;
+  function Room() {
+    usePresence(presence, "room1", "user1");
+    return null;
+  }
+  const root = mount();
+  await act(async () => {
+    root.render(<Room />);
+  });
+  await sleep(5 * LATENCY);
+
+  window.dispatchEvent(new Event("beforeunload"));
+
+  expect(sendBeacon).toHaveBeenCalledTimes(1);
+  const [, blob] = sendBeacon.mock.calls[0]!;
+  expect(JSON.parse(await blob.text()).path).toBe("rooms/presence:disconnect");
+
+  await act(async () => {
+    root.unmount();
+  });
 });

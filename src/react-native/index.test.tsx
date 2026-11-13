@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { act } from "react";
 import { createRoot } from "react-dom/client";
+import { makeFunctionReference } from "convex/server";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { usePresence, type PresenceAPI } from "./index.js";
 
@@ -84,4 +85,36 @@ test("returning from inactive replaces the heartbeat interval", async () => {
 
   await act(async () => root.unmount());
   expect(clearIntervalSpy).toHaveBeenCalledWith(replacementInterval);
+});
+
+test("going to the background calls the disconnect function it was given", async () => {
+  backend.heartbeat.mockResolvedValueOnce({
+    roomToken: "room-token",
+    sessionToken: "session-token",
+  } as never);
+  const fetchSpy = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue(new Response(null));
+  // The app's functions live in convex/rooms/presence.ts, not convex/presence.ts.
+  const presence = {
+    ...presenceApi,
+    disconnect: makeFunctionReference<"mutation">("rooms/presence:disconnect"),
+  } as unknown as PresenceAPI;
+  function Room() {
+    usePresence(presence, "room", "user");
+    return null;
+  }
+  const root = createRoot(document.createElement("div"));
+  await act(async () => root.render(<Room />));
+
+  act(() => appState.emit("background"));
+
+  expect(fetchSpy).toHaveBeenCalledTimes(1);
+  const [, init] = fetchSpy.mock.calls[0]!;
+  expect(JSON.parse(init!.body as string).path).toBe(
+    "rooms/presence:disconnect",
+  );
+
+  fetchSpy.mockRestore();
+  await act(async () => root.unmount());
 });

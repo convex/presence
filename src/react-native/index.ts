@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useConvex } from "convex/react";
-import { type FunctionReference } from "convex/server";
+import { getFunctionName, type FunctionReference } from "convex/server";
 import * as Crypto from "expo-crypto";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
@@ -53,6 +53,7 @@ export function usePresence(
 
   const heartbeat = useSingleFlight(useMutation(presence.heartbeat));
   const disconnect = useMutation(presence.disconnect);
+  const disconnectPath = getFunctionName(presence.disconnect);
 
   const fireAndForgetDisconnect = useCallback(
     (token: string) => {
@@ -60,12 +61,12 @@ export function usePresence(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          path: "presence:disconnect",
+          path: disconnectPath,
           args: { sessionToken: token },
         }),
       }).catch(() => {});
     },
-    [baseUrl],
+    [baseUrl, disconnectPath],
   );
 
   // Reset session when roomId/userId changes
