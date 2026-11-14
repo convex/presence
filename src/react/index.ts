@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useConvex } from "convex/react";
-import type { FunctionReference } from "convex/server";
+import { getFunctionName, type FunctionReference } from "convex/server";
 import useSingleFlight from "./useSingleFlight.js";
 
 // Interface in your Convex app /convex directory that implements these
@@ -95,6 +95,7 @@ export default function usePresence(
 
   const heartbeat = useSingleFlight(useMutation(presence.heartbeat));
   const disconnect = useMutation(presence.disconnect);
+  const disconnectPath = getFunctionName(presence.disconnect);
 
   useEffect(() => {
     // The heartbeat effect cleans up the old session.
@@ -148,7 +149,7 @@ export default function usePresence(
         const blob = new Blob(
           [
             JSON.stringify({
-              path: "presence:disconnect",
+              path: disconnectPath,
               args: { sessionToken: sessionTokenRef.current },
             }),
           ],
@@ -198,7 +199,16 @@ export default function usePresence(
         disconnectIfOrphaned(token);
       }
     };
-  }, [heartbeat, disconnect, roomId, userId, baseUrl, interval, sessionId]);
+  }, [
+    heartbeat,
+    disconnect,
+    disconnectPath,
+    roomId,
+    userId,
+    baseUrl,
+    interval,
+    sessionId,
+  ]);
 
   const state = useQuery(presence.list, roomToken ? { roomToken } : "skip");
   return useMemo(
