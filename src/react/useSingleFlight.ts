@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 
-// Included from https://github.com/get-convex/convex-helpers/blob/main/src/hooks/useSingleFlight.ts
+// Included from https://github.com/convex/convex-helpers/blob/main/src/hooks/useSingleFlight.ts
 
 /**
  * Wraps a function to single-flight invocations, using the latest args.
