@@ -115,6 +115,6 @@ test("going to the background calls the disconnect function it was given", async
     "rooms/presence:disconnect",
   );
 
-  fetchSpy.mockRestore();
   await act(async () => root.unmount());
+  fetchSpy.mockRestore();
 });
