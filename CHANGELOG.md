@@ -1,14 +1,20 @@
 # Changelog
 
+## 0.4.1
+
+### Patch Changes
+
+- Return the typed component API from the test registration helper.
+  ([#64](https://github.com/convex/presence/issues/64))
+
 ## 0.4.0
 
 - Replaces per-session scheduled disconnects with a deployment-wide batch
-  worker, increasing scalability by avoiding one scheduled function per
-  session.
+  worker, increasing scalability by avoiding one scheduled function per session.
 - Upgrades in place without a migration; pre-upgrade sessions get a grace
   deadline and legacy scheduled disconnects are ignored.
-- Fixes React Strict Mode remount races that could briefly disconnect an
-  active session.
+- Fixes React Strict Mode remount races that could briefly disconnect an active
+  session.
 - Prevents duplicate heartbeat intervals in React Native.
 
 ## 0.3.2
