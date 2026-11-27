@@ -95,7 +95,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "1.0.1",
     "@changesets/cli": "3.0.3",
-    "@convex-dev/auth": "0.0.95",
+    "@convex-dev/auth": "2.1.0",
     "@convex-dev/eslint-plugin": "^5.0.0",
     "@edge-runtime/vm": "5.0.0",
     "@eslint/eslintrc": "^3.3.1",
